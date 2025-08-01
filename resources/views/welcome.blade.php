@@ -50,19 +50,98 @@
             @endif
         </header>
 
-        <h1>🛡️ Secure Online Store - Vulnerability Demo</h1>
+        <div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+            <h1 style="text-align: center; margin-bottom: 30px;">🛡️ Security Demo - Database Security & Encryption</h1>
+            
+        
+            @if(session('success'))
+                <div style="background: #d4edda; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #28a745; color: #155724;">
+                    <strong>{{ session('success') }}</strong>
+                </div>
+            @endif
 
-    <ul>
-        <li><a href="/login-vuln">🔓 Vulnerable Login (SQL Injection)</a></li>
-        <li><a href="/login-safe">🔐 Secure Login</a></li>
-        <li><a href="/comment-vuln">💬 Vulnerable Comments (XSS)</a></li>
-        <li><a href="/comment-safe">🧼 Secure Comments</a></li>
-        <li><a href="/register">📝 Register (Password Hashing)</a></li>
-        <li><a href="/order">📦 Place Order (Data Encryption)</a></li>
-        <li><a href="/logout">🔒 Logout</a></li>
-    </ul>
+            @if(session('error'))
+                <div style="background: #f8d7da; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #dc3545; color: #721c24;">
+                    <strong>{{ session('error') }}</strong>
+                </div>
+            @endif
 
-    <p>This demo showcases common web security vulnerabilities and their secure alternatives.</p>
+            @guest
+                <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                    <h3>🔐 First Time Testing?</h3>
+                    <p><strong>Quick Start:</strong> Use these pre-created test accounts or register your own:</p>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li><strong>alice@example.com</strong> / password123 (3 orders)</li>
+                        <li><strong>bob@example.com</strong> / password123 (2 orders)</li>
+                        <li><strong>dave@example.com</strong> / password123 (0 orders - empty state)</li>
+                    </ul>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                    <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <h3>🔓 Vulnerability Demos</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin: 10px 0;"><a href="/login-vuln" style="color: #dc3545; text-decoration: none;">🔓 Vulnerable Login (SQL Injection)</a></li>
+                            <li style="margin: 10px 0;"><a href="/comment-vuln" style="color: #dc3545; text-decoration: none;">💬 Vulnerable Comments (XSS)</a></li>
+                        </ul>
+                    </div>
+
+                    <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <h3>🔐 Secure Alternatives</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin: 10px 0;"><a href="/login-safe" style="color: #28a745; text-decoration: none;">🔐 Secure Login</a></li>
+                            <li style="margin: 10px 0;"><a href="/comment-safe" style="color: #28a745; text-decoration: none;">🧼 Secure Comments</a></li>
+                            <li style="margin: 10px 0;"><a href="/register" style="color: #007bff; text-decoration: none;">📝 Register New Account</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="background: #e7f3ff; padding: 20px; border-radius: 8px; border-left: 4px solid #007bff;">
+                    <h3>🗃️ Database Security Features (Login Required)</h3>
+                    <p>To test database encryption and row-level security, you need to login first:</p>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li><strong>📦 Place Order:</strong> Demonstrates field-level encryption of sensitive data</li>
+                        <li><strong>📋 View Orders:</strong> Shows row-level security (users see only their orders)</li>
+                        <li><strong>🔍 Audit Trail:</strong> All database operations are logged</li>
+                    </ul>
+                    <div style="margin-top: 15px;">
+                        <a href="/login-safe" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; display: inline-block;">🔐 Login to Test Database Security</a>
+                    </div>
+                </div>
+            @else
+                <div style="background: #d4edda; padding: 20px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #28a745;">
+                    <h3>👋 Welcome back, {{ Auth::user()->name }}!</h3>
+                    <p>You are now logged in and can access all database security features.</p>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+                    <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <h3>🗃️ Database Security Features</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin: 15px 0;"><a href="/order" style="color: #28a745; text-decoration: none; font-weight: bold;">📦 Place Order (Data Encryption)</a></li>
+                            <li style="margin: 15px 0;"><a href="/my-orders" style="color: #007bff; text-decoration: none; font-weight: bold;">📋 View My Orders (Row-Level Security)</a></li>
+                        </ul>
+                    </div>
+
+                    <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <h3>🔓 Vulnerability Demos</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin: 10px 0;"><a href="/login-vuln" style="color: #dc3545; text-decoration: none;">🔓 Vulnerable Login (SQL Injection)</a></li>
+                            <li style="margin: 10px 0;"><a href="/comment-vuln" style="color: #dc3545; text-decoration: none;">💬 Vulnerable Comments (XSS)</a></li>
+                        </ul>
+                    </div>
+
+                    <div style="background: white; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <h3>🔐 Secure Alternatives</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="margin: 10px 0;"><a href="/login-safe" style="color: #28a745; text-decoration: none;">🔐 Secure Login</a></li>
+                            <li style="margin: 10px 0;"><a href="/comment-safe" style="color: #28a745; text-decoration: none;">🧼 Secure Comments</a></li>
+                            <li style="margin: 10px 0;"><a href="/logout" style="color: #6c757d; text-decoration: none;">🔒 Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            @endguest
+        </div>
 
         <div class="flex items-center justify-center w-full transition-opacity opacity-100 duration-750 lg:grow starting:opacity-0">
             <main class="flex max-w-[335px] w-full flex-col-reverse lg:max-w-4xl lg:flex-row">

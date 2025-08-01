@@ -55,17 +55,19 @@ class AuthDemoController extends Controller
         'password' => 'required|min:6',
     ]);
 
-    // 2. 查询用户
-    $user = \App\Models\User::where('email', $credentials['email'])->first();
-
-    // 3. 同时判断用户存在且密码正确
-    if ($user && \Illuminate\Support\Facades\Hash::check($credentials['password'], $user->password)) {
-        // 登录成功
-        return view('login-result')->with('message', '✅ Login Success (SECURE)');
+    // 2. 使用Laravel的Auth::attempt进行安全认证
+    if (Auth::attempt($credentials)) {
+        // 登录成功 - 重新生成session ID防止session fixation攻击
+        $request->session()->regenerate();
+        
+        // 重定向到主页，用户现在已登录
+        return redirect('/')->with('success', '✅ Login Successful! You can now access database security features.');
     }
 
     // 登录失败
-    return view('login-result')->with('message', '❌ Login Failed');
+    return back()->withErrors([
+        'email' => 'The provided credentials do not match our records.',
+    ])->withInput($request->except('password'));
 }
 
 

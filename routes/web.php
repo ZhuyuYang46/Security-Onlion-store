@@ -46,6 +46,10 @@ Route::post('/register', [OrderDemoController::class, 'doRegister']);
 Route::get('/order', [OrderDemoController::class, 'showOrder']);
 Route::post('/order', [OrderDemoController::class, 'doOrder']);
 
+// 查看用户订单（行级安全演示）
+Route::get('/my-orders', [OrderDemoController::class, 'viewMyOrders']);
+Route::get('/order/{id}', [OrderDemoController::class, 'viewOrder']);
+
 
 Route::get('/logout', function () {
     \Illuminate\Support\Facades\Auth::logout();
