@@ -128,6 +128,8 @@
                         <ul style="list-style: none; padding: 0;">
                             <li style="margin: 10px 0;"><a href="/login-vuln" style="color: #dc3545; text-decoration: none;">🔓 Vulnerable Login (SQL Injection)</a></li>
                             <li style="margin: 10px 0;"><a href="/comment-vuln" style="color: #dc3545; text-decoration: none;">💬 Vulnerable Comments (XSS)</a></li>
+                            <li style="margin: 10px 0;"><a href="/order-vuln" style="color: #dc3545; text-decoration: none;">🚨 Vulnerable Orders (Multiple Issues)</a></li>
+                            <li style="margin: 10px 0;"><a href="/my-orders-vuln" style="color: #dc3545; text-decoration: none;">📋 Vulnerable Order View (IDOR)</a></li>
                         </ul>
                     </div>
 

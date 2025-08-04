@@ -50,6 +50,15 @@ Route::post('/order', [OrderDemoController::class, 'doOrder']);
 Route::get('/my-orders', [OrderDemoController::class, 'viewMyOrders']);
 Route::get('/order/{id}', [OrderDemoController::class, 'viewOrder']);
 
+// ----------------------------
+// 🚨 VULNERABLE VERSIONS (for educational purposes)
+// ----------------------------
+
+// 漏洞版订单系统 - 演示多种安全问题
+Route::get('/order-vuln', [OrderDemoController::class, 'showOrderVuln']);
+Route::post('/order-vuln', [OrderDemoController::class, 'doOrderVuln'])->withoutMiddleware(['csrf']); // CSRF protection disabled
+Route::get('/my-orders-vuln', [OrderDemoController::class, 'viewMyOrdersVuln']);
+Route::get('/order-vuln/{id}', [OrderDemoController::class, 'viewOrderVuln']);
 
 Route::get('/logout', function () {
     \Illuminate\Support\Facades\Auth::logout();

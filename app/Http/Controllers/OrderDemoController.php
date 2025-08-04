@@ -206,4 +206,114 @@ class OrderDemoController extends Controller
             \Log::error('Audit trail logging failed: ' . $e->getMessage());
         }
     }
+
+    // VULNERABLE VERSION - Demonstrates multiple security flaws
+    public function showOrderVuln()
+    {
+        // No authentication check - anyone can access
+        return view('place-order-vuln');
+    }
+
+    // VULNERABLE: Order creation with multiple security flaws
+    public function doOrderVuln(Request $request)
+    {
+        // No authentication check
+        // No CSRF protection (middleware disabled for this route)
+        // No input validation
+        
+        try {
+            // VULNERABLE: Direct SQL injection possible
+            $userId = $request->input('user_id', 1); // Can be manipulated
+            $productName = $request->input('product_name');
+            $quantity = $request->input('quantity');
+            $deliveryAddress = $request->input('delivery_address');
+            $phoneNumber = $request->input('phone_number');
+            $creditCardNumber = $request->input('credit_card_number');
+
+            // VULNERABLE: Raw SQL query with string concatenation
+            $sql = "INSERT INTO orders (user_id, encrypted_info, created_at, updated_at) VALUES (
+                '" . $userId . "', 
+                '" . json_encode([
+                    'product_name' => $productName,
+                    'quantity' => $quantity,
+                    'delivery_address' => $deliveryAddress,
+                    'phone_number' => $phoneNumber,
+                    'credit_card_number' => $creditCardNumber, // Plain text storage!
+                    'order_date' => now()->toDateTimeString(),
+                ]) . "',
+                '" . now() . "',
+                '" . now() . "'
+            )";
+
+            // VULNERABLE: Execute raw SQL without parameterization
+            DB::statement($sql);
+
+            // VULNERABLE: XSS in success message
+            return redirect('/order-vuln')->with('success', 
+                'Order placed successfully for: <script>alert("XSS Vulnerability!")</script>' . $productName);
+
+        } catch (\Exception $e) {
+            // VULNERABLE: Error information disclosure
+            return back()->withErrors(['error' => 'Database Error: ' . $e->getMessage()]);
+        }
+    }
+
+    // VULNERABLE: View orders without proper access control
+    public function viewMyOrdersVuln(Request $request)
+    {
+        try {
+            // VULNERABLE: SQL injection in ORDER BY clause
+            $orderBy = $request->input('sort', 'id');
+            
+            // VULNERABLE: No user isolation - can see all orders
+            $sql = "SELECT * FROM orders ORDER BY " . $orderBy;
+            $orders = DB::select($sql);
+
+            $decryptedOrders = [];
+            foreach ($orders as $order) {
+                // VULNERABLE: No encryption - data stored as plain JSON
+                $decryptedData = json_decode($order->encrypted_info, true);
+                $decryptedOrders[] = [
+                    'id' => $order->id,
+                    'user_id' => $order->user_id, // Exposed user IDs
+                    'created_at' => $order->created_at,
+                    'data' => $decryptedData
+                ];
+            }
+
+            return view('my-orders-vuln', ['orders' => $decryptedOrders]);
+
+        } catch (\Exception $e) {
+            // VULNERABLE: Detailed error exposure
+            return back()->withErrors(['error' => 'SQL Error: ' . $e->getMessage() . ' Query: ' . $sql]);
+        }
+    }
+
+    // VULNERABLE: Direct object reference without authorization
+    public function viewOrderVuln($orderId, Request $request)
+    {
+        try {
+            // VULNERABLE: SQL injection in WHERE clause
+            $sql = "SELECT * FROM orders WHERE id = " . $orderId;
+            $orders = DB::select($sql);
+
+            if (empty($orders)) {
+                return redirect('/my-orders-vuln')->withErrors(['error' => 'Order not found.']);
+            }
+
+            $order = $orders[0];
+            
+            // VULNERABLE: No access control - anyone can view any order
+            $decryptedData = json_decode($order->encrypted_info, true);
+
+            return view('order-details-vuln', [
+                'order' => $order,
+                'data' => $decryptedData
+            ]);
+
+        } catch (\Exception $e) {
+            // VULNERABLE: Full error disclosure including stack trace
+            return back()->withErrors(['error' => 'Exception: ' . $e->getMessage() . ' in ' . $e->getFile() . ':' . $e->getLine()]);
+        }
+    }
 }
